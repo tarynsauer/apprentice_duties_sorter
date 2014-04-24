@@ -1,11 +1,5 @@
 (ns sorter.duties)
 
-(def duties [{:name "chairs", :min-needed 2, :max-needed 3} 
-             {:name "av", :min-needed 2, :max-needed 3} 
-             {:name "food", :min-needed 2, :max-needed 3} 
-             {:name "greeter", :min-needed 1, :max-needed 1}
-             {:name "standup", :min-needed 1, :max-needed 2}])
-
 (def foreman-assignment "utility") 
 
 (defn duties-options [duties]

@@ -1,4 +1,4 @@
-(defproject sorter "1.0-SNAPSHOT"
+(defproject sorter "1.0.1-SNAPSHOT"
   :description "Apprentice Duties Sorter App"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

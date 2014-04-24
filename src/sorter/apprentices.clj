@@ -1,24 +1,24 @@
 (ns sorter.apprentices
   (:require [sorter.duties :refer :all]
-            [sorter.utils :refer :all]))
-
-(defn annotate-foreman [apprentices foreman-name] 
-   (map (fn [apprentice]
-        (assoc apprentice
-            :foreman? (= (:name apprentice) foreman-name))) apprentices))
+            [sorter.utils :refer :all]
+            [sorter.data :refer :all]))
 
 (defn remove-unavailable [apprentices unavailable]
      (let [unavailables-set (set unavailable)]
          (filter (fn [apprentice]
                 (not (contains? unavailables-set (:name apprentice))))
               apprentices)))
+ 
+(defn annotate-foreman [apprentices foreman-name] 
+   (map (fn [apprentice]
+        (assoc apprentice
+            :foreman? (= (:name apprentice) foreman-name))) apprentices))
 
 (defn annotate-options [apprentices duties]
-    (let [options (duties-options duties)]
-       (map (fn [apprentice]
-           (assoc apprentice 
-                :duty-options (remove #{(:prev-duty apprentice)} (seq options))))
-        apprentices)))
+  (let [options (duties-options duties)]
+     (map (fn [apprentice]
+            (assoc apprentice :duty-options (remove #{(:prev-duty apprentice)} (seq options))))
+          apprentices)))
 
 (defn assign-foreman [apprentices]
     (let [apprentices apprentices]
@@ -29,34 +29,26 @@
         apprentices)))
 
 (defn all-duties-assigned? [apprentices duties-list]
-  (loop [apprentices apprentices assigned-duties '()]
-     (if (empty? apprentices) 
-       (= (sort (remove nil? assigned-duties)) (sort (conj duties-list foreman-assignment))) 
-       (let [apprentice (first apprentices) apprentices (rest apprentices)]
-         (recur apprentices 
-              (if-not (= (:assigned-to apprentice) nil) 
-                  (conj assigned-duties (:assigned-to apprentice))
-                  assigned-duties))))))
-
+  (= (sort (remove nil? (filter identity (map :assigned-to apprentices))))
+     (sort (conj duties-list foreman-assignment))))
+ 
 (defn all-apprentices-have-assignments? [apprentices]
-  (loop [apprentices apprentices assigned-duties '()]
-     (if (empty? apprentices )
-       (every? identity assigned-duties)
-       (let [apprentice (first apprentices) apprentices (rest apprentices)]
-         (recur apprentices 
-            (conj assigned-duties (:assigned-to apprentice)))))))
+  (every? :assigned-to apprentices))
 
+; Refactor 
 (defn assign-duty [apprentices assignments]
   (loop [duties-list (shuffle assignments)
         [a-map & more] (shuffle apprentices)
         acc []]
      (if a-map
-       (let [duty (first duties-list) duties (rest duties-list)]
+       (let [duty (first duties-list) 
+             duties (rest duties-list)]
          (recur duties more 
               (if (and (in? (:duty-options a-map) duty) 
                        (= (:assigned-to a-map) nil)) 
                   (conj acc (assoc a-map :assigned-to duty))
-                  (conj acc a-map)))) acc)))
+                  (conj acc a-map)))) 
+       acc)))
 
 (defn annotate-av [apprentices apprentice-name]
     (map (fn [apprentice]
@@ -86,8 +78,10 @@
        (recur orig-apprentices))))))
 
 (defn print-results [apprentices]
-  (for [apprentice apprentices] 
-    (println (:name apprentice)":" (:assigned-to apprentice))))
+  (println "\n\n*Duties for today*")
+  (doseq [apprentice apprentices] 
+    (println (:name apprentice) "-" (:assigned-to apprentice)))
+  (println "\n\n"))
 
 (defn annotate-assignments [apprentices duties]
   (-> apprentices
@@ -95,13 +89,11 @@
     (assign-av av-experienced)
     (assign-av av-novice)
     (assign-all-required-duties duties)
-    (assign-all-remaining-apprentices duties)
-))
+    (assign-all-remaining-apprentices duties)))
  
-(defn solve [apprentices duties unavailable foreman]
+(defn run-sorter [apprentices duties unavailable foreman]
  (-> apprentices
-    (annotate-options duties)
+    (remove-unavailable unavailable) 
     (annotate-foreman foreman)
-    (remove-unavailable unavailable)
-    (annotate-assignments duties)
-    (print-results)))
+    (annotate-options duties)
+    (annotate-assignments duties)))
