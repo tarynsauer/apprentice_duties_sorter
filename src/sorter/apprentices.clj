@@ -42,6 +42,26 @@
                   (conj acc a-map)))) 
        acc)))
 
+;; TODO: Add annotate-av function to assign apprentice to av 
+;; (defn annotate-av [apprentices apprentice-name]
+;; 
+;; )
+
+(defn av-experienced [apprentices]  ;; TODO: Refactor to remove repetition.
+  (filter (fn [apprentice] (and
+                              (>= (:av-count apprentice) 3)
+                              (in? (:duty-options apprentice) "av"))) apprentices))
+
+(defn av-novice [apprentices]
+  (filter (fn [apprentice] (and
+                              (< (:av-count apprentice) 3)
+                              (in? (:duty-options apprentice) "av"))) apprentices))
+
+;; TODO: Add assign-av function to assign one apprentice from level list
+;; (defn assign-av [apprentices level]
+;; 
+;; )
+
 (defn all-duties-assigned? [apprentices duties-list]
   (= (sort (remove nil? (filter identity (map :assigned-to apprentices))))
      (sort (conj duties-list foreman-assignment))))
@@ -68,6 +88,7 @@
 (defn annotate-assignments [apprentices duties]
   (-> apprentices
     (assign-foreman)
+    ;; assign-av for experienced and novice levels
     (assign-all-required-duties duties) 
     (assign-all-remaining-apprentices duties)))
  
