@@ -17,9 +17,3 @@
      (flatten 
         (map (fn [duty]
            (into optional-list (repeat (- (:max-needed duty) (:min-needed duty)) (:name duty)))) duties))))
-
-(defn av-experienced [apprentices]
-  (filter (fn [apprentice] (>= (:av-count apprentice) 3)) apprentices))
-
-(defn av-novice [apprentices]
-  (filter (fn [apprentice] (< (:av-count apprentice) 3)) apprentices))

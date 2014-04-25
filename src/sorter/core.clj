@@ -5,4 +5,4 @@
             [sorter.data :refer :all]))
 
 (defn -main [] 
-  (print-results (run-sorter apprentices duties '() "Taryn")))
+  (print-results (run-sorter apprentices duties '("Tom") "Taryn")))

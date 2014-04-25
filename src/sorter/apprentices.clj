@@ -28,14 +28,6 @@
                  apprentice)) 
         apprentices)))
 
-(defn all-duties-assigned? [apprentices duties-list]
-  (= (sort (remove nil? (filter identity (map :assigned-to apprentices))))
-     (sort (conj duties-list foreman-assignment))))
- 
-(defn all-apprentices-have-assignments? [apprentices]
-  (every? :assigned-to apprentices))
-
-; Refactor 
 (defn assign-duty [apprentices assignments]
   (loop [duties-list (shuffle assignments)
         [a-map & more] (shuffle apprentices)
@@ -50,17 +42,13 @@
                   (conj acc a-map)))) 
        acc)))
 
-(defn annotate-av [apprentices apprentice-name]
-    (map (fn [apprentice]
-      (if (and (= (:name apprentice) apprentice-name)
-               (= (:assigned-to apprentice) nil)) 
-                  (assoc apprentice :assigned-to "av")
-                  apprentice)) apprentices))
-
-(defn assign-av [apprentices level]
-  (let [potential-assignees (level apprentices)]
-      (annotate-av apprentices (:name (first (shuffle potential-assignees))))))
-
+(defn all-duties-assigned? [apprentices duties-list]
+  (= (sort (remove nil? (filter identity (map :assigned-to apprentices))))
+     (sort (conj duties-list foreman-assignment))))
+ 
+(defn all-apprentices-have-assignments? [apprentices]
+  (every? :assigned-to apprentices))
+ 
 (defn assign-all-required-duties [apprentices duties]
   (let [orig-apprentices apprentices required-duties (required-duties duties)]
     (loop [apprentices apprentices]
@@ -77,18 +65,10 @@
        apprentices
        (recur orig-apprentices))))))
 
-(defn print-results [apprentices]
-  (println "\n\n*Duties for today*")
-  (doseq [apprentice apprentices] 
-    (println (:name apprentice) "-" (:assigned-to apprentice)))
-  (println "\n\n"))
-
 (defn annotate-assignments [apprentices duties]
   (-> apprentices
     (assign-foreman)
-    (assign-av av-experienced)
-    (assign-av av-novice)
-    (assign-all-required-duties duties)
+    (assign-all-required-duties duties) 
     (assign-all-remaining-apprentices duties)))
  
 (defn run-sorter [apprentices duties unavailable foreman]
@@ -97,3 +77,9 @@
     (annotate-foreman foreman)
     (annotate-options duties)
     (annotate-assignments duties)))
+
+(defn print-results [apprentices]
+  (println "\n\n*Duties for today*")
+  (doseq [apprentice apprentices] 
+    (println (:name apprentice) "-" (:assigned-to apprentice)))
+  (println "\n\n"))
