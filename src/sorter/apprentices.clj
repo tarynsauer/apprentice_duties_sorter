@@ -44,7 +44,6 @@
 
 ;; TODO: Add annotate-av function to assign apprentice to av 
 ;; (defn annotate-av [apprentices apprentice-name]
-;; 
 ;; )
 
 (defn av-experienced [apprentices]  ;; TODO: Refactor to remove repetition.
@@ -58,9 +57,8 @@
                               (in? (:duty-options apprentice) "av"))) apprentices))
 
 ;; TODO: Add assign-av function to assign one apprentice from level list
-;; (defn assign-av [apprentices level]
-;; 
-;; )
+(defn assign-av [apprentices]
+  (annotate-av apprentices (:name (first (shuffle apprentices)))))
 
 (defn all-duties-assigned? [apprentices duties-list]
   (= (sort (remove nil? (filter identity (map :assigned-to apprentices))))

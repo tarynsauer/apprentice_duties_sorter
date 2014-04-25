@@ -30,13 +30,17 @@
     (should= 12 
       (count (assign-duty (annotate-options apprentices duties) (required-duties duties)))))
 
-(it "returns the name of somebody on the av-experienced list"
+(it "assigns apprentice to av"
     (should= 12
        (count (assign-av (annotate-options apprentices duties) av-experienced))))
 
 (it "returns false when some duties have not yet been assigned"
     (should= false 
       (all-duties-assigned? (assign-duty (annotate-options apprentices duties) (required-duties duties)) (required-duties duties))))
+
+(it "assigns the apprentice to av"
+   (should= "av"
+        (:assigned-to (first (annotate-av apprentices "Taryn")))))
 
 (it "returns false unless all duties have been assigned"
     (should= false 
