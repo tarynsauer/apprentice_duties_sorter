@@ -42,6 +42,7 @@
                   (conj acc a-map))))
        acc)))
 
+;; Adds av to given apprentice.
 (defn annotate-av [apprentices apprentice-name]
   (map (fn [apprentice]
       (if (and (= (:name apprentice) apprentice-name)
@@ -55,7 +56,7 @@
 (defn av-novice [apprentices]
   (filter (fn [apprentice] (< (:av-count apprentice) 3)) apprentices))
 
-(defn assign-av [apprentices by-level]
+(defn assign-av [apprentices by-level] ;; Randomly assignes av to one apprentice in list.
   (let [potential-assignees (by-level apprentices)]
       (annotate-av apprentices (:name (first (shuffle potential-assignees))))))
 
